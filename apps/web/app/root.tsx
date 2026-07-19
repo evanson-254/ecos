@@ -5,14 +5,31 @@ import {
   Scripts,
   ScrollRestoration,
   isRouteErrorResponse,
+  useFetchers,
+  useNavigation,
 } from "react-router"
 
 import type { Route } from "./+types/root"
 import "@workspace/ui/globals.css"
+import TopBarProgress from "react-topbar-progress-indicator"
+
+TopBarProgress.config({
+  barColors: {
+    0: "#1447e6",
+    "0.5": "#1447e6",
+    1: "#1447e6",
+  },
+})
 
 export function Layout({ children }: { children: React.ReactNode }) {
+  const navigation = useNavigation();
+  const fetchers = useFetchers();
+
+  const isFetcherLoading = fetchers.some(
+    (fetcher) => fetcher.state !== "idle"
+  )
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -20,6 +37,8 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Links />
       </head>
       <body>
+          {(navigation.state !== "idle" || isFetcherLoading) && <TopBarProgress />}
+        
         {children}
         <ScrollRestoration />
         <Scripts />

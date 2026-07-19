@@ -132,3 +132,61 @@
     cursor: pointer;
     }
 }
+
+@keyframes float {
+
+    0% {
+        transform: translateY(0px);
+    }
+
+    50% {
+        transform: translateY(-30px);
+    }
+
+    100% {
+        transform: translateY(0px);
+    }
+
+}
+
+.blob{
+    
+    position:absolute;
+
+    border-radius:9999px;
+
+    filter:blur(90px);
+
+    animation:float 8s ease-in-out infinite;
+
+}
+
+.animation-delay-2000{
+
+    animation-delay:2s;
+
+}
+
+.animation-delay-4000{
+
+    animation-delay:4s;
+
+}
+
+.sparkle{
+
+    position:absolute;
+
+    font-size:2rem;
+
+    animation:sparkle 4s ease-in-out infinite;
+
+    user-select:none;
+
+}
+
+.progress-bar{
+
+    animation:progress 4s linear forwards;
+
+}
