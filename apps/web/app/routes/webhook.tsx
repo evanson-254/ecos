@@ -19,6 +19,7 @@ export async function action({ request }: Route.ActionArgs) {
 
     // 2. Get Telegram JSON
     const update = await request.json();
+    console.log("update", update);
     const callback = update.callback_query;
     const data = update?.callback_query?.data;
     const dataArray = data.split(":");
@@ -77,7 +78,7 @@ const registerWebhook = async () => {
 };
 
 export async function loader({ request }: Route.LoaderArgs) {
-    // await registerWebhook();
+    await registerWebhook();
     return new Response("OK", {
         status: 200,
     });

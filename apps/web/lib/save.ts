@@ -1,7 +1,7 @@
 import { promises as fs } from "node:fs";
 import path from "node:path";
 
-export const myDir= "C:/projects/data/telegram-updates.json";
+export const myDir= "data/telegram-updates.json";
 
 const filePath = path.resolve(
   process.cwd(),
