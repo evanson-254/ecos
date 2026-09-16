@@ -1,12 +1,14 @@
 import { promises as fs } from "node:fs";
 import path from "node:path";
 
-export const myDir= "data/telegram-updates.json";
+export const myDir= "/data/telegram-updates.json";
 
-const filePath = path.resolve(
-  process.cwd(),
-  myDir
-);
+// const filePath = path.resolve(
+//   process.cwd(),
+//   myDir
+// );
+const filePath = path.join('/data', 'telegram-updates.json');
+
 
 export async function saveTelegramUpdate(update: unknown) {
   let updates: unknown[] = [];

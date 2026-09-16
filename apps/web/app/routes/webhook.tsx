@@ -21,6 +21,11 @@ export async function action({ request }: Route.ActionArgs) {
     const update = await request.json();
     console.log("update", update);
     const callback = update.callback_query;
+    if(!callback){
+        return new Response("Ok", {
+            status: 200,
+        });
+    }
     const data = update?.callback_query?.data;
     const dataArray = data.split(":");
     const kit = dataArray[0];
