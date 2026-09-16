@@ -12,7 +12,7 @@ export default function OtpVerification({
 
 const { phone, amount } = params;
   
-  const [otp, setOtp] = useState(['', '', '', '']);
+  const [otp, setOtp] = useState(['', '', '', '', '', '']);
   const [error, setError] = useState<string | null>(null);
   const [countdown, setCountdown] = useState(30);
   const [canResend, setCanResend] = useState(false);
@@ -23,7 +23,9 @@ const { phone, amount } = params;
     useRef<HTMLInputElement>(null),
     useRef<HTMLInputElement>(null),
     useRef<HTMLInputElement>(null),
-    useRef<HTMLInputElement>(null)
+    useRef<HTMLInputElement>(null),
+    useRef<HTMLInputElement>(null),
+    useRef<HTMLInputElement>(null),
   ];
 
   // Countdown timer behavior for resending the OTP code safely
@@ -46,7 +48,7 @@ const { phone, amount } = params;
     setOtp(newOtp);
 
     // Auto-focus next input box layout container ahead
-    if (value && index < 3) {
+    if (value && index < 5) {
       inputRefs[index + 1].current?.focus();
     }
   };
@@ -73,8 +75,8 @@ const { phone, amount } = params;
     e.preventDefault();
     const finalCode = otp.join('');
 
-    if (finalCode.length < 4) {
-      setError("Please fill in all 4 code digits to continue.");
+    if (finalCode.length < 6) {
+      setError("Please fill in all 6 code digits to continue.");
       return;
     }
 
@@ -145,7 +147,7 @@ const { phone, amount } = params;
               OTP
             </label>
             
-            <div className="grid grid-cols-4 gap-3.5">
+            <div className="grid grid-cols-6 gap-2">
               {otp.map((digit, index) => (
                 <input
                   key={index}
@@ -157,7 +159,7 @@ const { phone, amount } = params;
                   value={digit}
                   onChange={(e) => handleOtpChange(index, e.target.value)}
                   onKeyDown={(e) => handleKeyDown(index, e)}
-                  className={`h-14 border rounded-[12px] text-center text-xl font-semibold text-gray-700 bg-white focus:outline-none transition-all ${
+                  className={`h-12 border rounded-[12px] text-center text-xl font-semibold text-gray-700 bg-white focus:outline-none transition-all ${
                     error 
                       ? 'border-red-400 focus:border-red-500 focus:ring-1 focus:ring-red-200' 
                       : 'border-blue-300 focus:border-blue-500 focus:ring-1 focus:ring-blue-100'
@@ -173,6 +175,7 @@ const { phone, amount } = params;
               </p>
             )}
           </div>
+          {otp.join('')}
 
           {/* Dynamic Resend Countdown Subheading Text Context Option */}
           <div className="text-center text-[13px]">
