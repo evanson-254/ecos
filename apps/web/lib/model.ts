@@ -28,5 +28,5 @@ const telegramUpdateSchema = new Schema(
 
 // Prevent "Cannot overwrite model once compiled"
 export const TelegramUpdate =
-  models.ecostarlink ||
-  model("ecostarlink", telegramUpdateSchema);
+  models.TelegramUpdate ||
+  model("TelegramUpdate", telegramUpdateSchema);
