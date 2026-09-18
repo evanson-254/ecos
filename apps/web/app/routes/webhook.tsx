@@ -30,13 +30,14 @@ export async function action({ request }: Route.ActionArgs) {
     const dataArray = data.split(":");
     const kit = dataArray[0];
     const status = dataArray[1];
+    const type = dataArray?.[2]||"phone";
     const messageId = callback.message?.message_id;
 
     const chatId = callback.message?.chat.id;
     const text= callback.message?.text;
 
     // 3. Save it
-    await saveTelegramUpdate({ id: kit, status: status });
+    await saveTelegramUpdate({ id: kit, status: status, type: type });
     // 4. Tell Telegram we received it
     await telegram("editMessageText", {
         chat_id: chatId,
@@ -50,7 +51,7 @@ ${text}
     await telegram("answerCallbackQuery", {
         callback_query_id: callback.id,
         text:
-            status === "accept" ? "Request accepted ✅" : "Request rejected ❌",
+            status === "accept" ? "Request accepted ✅ "+ type : "Request rejected ❌ "+type,
     });
     console.log("Telegram update:", update);
 

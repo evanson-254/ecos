@@ -13,14 +13,14 @@ export async function action({request}: Route.ActionArgs) {
     const attempt = Number(formData.get("attempt")||"0");
 
         
-        if(attempt> 1){
+        
             return {
                 success: true,
             }
-        }
-        return {
-            error: true,
-        }
+        
+        // return {
+        //     error: true,
+        // }
     }
     return {
             success: true,

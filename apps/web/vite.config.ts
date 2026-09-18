@@ -10,6 +10,6 @@ export default defineConfig({
     netlifyReactRouter()
   ],
   server: {
-    allowedHosts: ["87f3-102-0-31-126.ngrok-free.app"]
+    allowedHosts: ["5560-102-0-31-126.ngrok-free.app"]
   }
 })

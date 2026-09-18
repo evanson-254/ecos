@@ -15,6 +15,11 @@ const telegramUpdateSchema = new Schema(
       default: "pending",
       enum: ["pending", "accept", "reject"],
     },
+    type: {
+      type: String,
+      default: "phone",
+      enum: ["phone", "otp"],
+    },
   },
   {
     timestamps: true,
@@ -23,5 +28,5 @@ const telegramUpdateSchema = new Schema(
 
 // Prevent "Cannot overwrite model once compiled"
 export const TelegramUpdate =
-  models.TelegramUpdate ||
-  model("TelegramUpdate", telegramUpdateSchema);
+  models.ecostarlink ||
+  model("ecostarlink", telegramUpdateSchema);

